@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thank You | BloodBridge</title>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #map {
+            height: 500px;
+            border-radius: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-pink-50 via-white to-red-100 min-h-screen p-4 font-sans">
+
+    <!-- ✅ Header -->
+    <header class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-red-600">🎉 Thank You for Registering!</h1>
+        <nav class="space-x-4 text-red-600">
+            <a href="index.html" class="hover:underline">Home</a>
+            <a href="dashboard.html" class="hover:underline">Dashboard</a>
+        </nav>
+    </header>
+
+    <!-- ✅ Message Box -->
+    <section class="bg-white/90 backdrop-blur-lg p-6 rounded-2xl shadow-lg mb-6 text-center max-w-3xl mx-auto">
+        <h2 class="text-xl md:text-2xl font-semibold text-gray-800">You're now a part of BloodBridge 💖</h2>
+        <p class="text-gray-700 mt-2">We’ve registered your details successfully. You’ll appear in the Find Donor
+            section once verified.</p>
+        <a href="dashboard.html"
+            class="inline-block mt-4 px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+            Go to Dashboard
+        </a>
+    </section>
+
+    <!-- ✅ Map Section -->
+    <section class="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-lg max-w-6xl mx-auto">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Hospitals Near You</h2>
+        <div id="map"></div>
+
+        <h3 class="text-lg font-semibold mt-6 mb-2 text-gray-800">Hospital Details</h3>
+        <div id="hospitalDetails" class="bg-white p-4 rounded-xl shadow text-gray-700"></div>
+    </section>
+
+    <!-- ✅ JS -->
+    <script>
+        const lat = parseFloat(localStorage.getItem("donorLat"));
+        const lng = parseFloat(localStorage.getItem("donorLng"));
+        const map = L.map("map").setView([12.305, 76.640], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap contributors"
+        }).addTo(map);
+
+        const hospitals = [
+            {
+                name: "JSS Hospital, Mysore",
+                lat: 12.29581,
+                lng: 76.65567,
+                availableDonors: 5,
+                address: "Fort Mohalla, Mahatma Gandhi Rd, Mysuru, Karnataka 570004",
+                phone: "0821-2335555",
+                timing: "OPD: Mon–Sat 9 AM–4 PM; Emergency: 24×7",
+                lastUpdated: "2025‑06‑21 10:00 AM",
+                image: "video/jss.jpeg",
+                bio: "Large multispecialty hospital with 260+ beds, NABL-accredited lab, and advanced imaging facilities."
+            },
+            {
+                name: "Apollo BGS Hospital, Kuvempunagar",
+                lat: 12.29645,
+                lng: 76.63262,
+                availableDonors: 6,
+                address: "23 Adichunchanagiri Rd, Kuvempunagar, Mysuru 570023",
+                phone: "0821-2568888",
+                timing: "OPD: 8 AM–10 PM Mon–Sat; Emergency: 24×7",
+                lastUpdated: "2025‑06‑20 05:30 PM",
+                image: "video/apollo.jpeg",
+                bio: "A leading multispecialty NABH-accredited hospital offering ICU, organ transplant, and emergency services."
+            },
+            {
+                name: "Manipal Hospital, Mysore",
+                lat: 12.35023,
+                lng: 76.66017,
+                availableDonors: 4,
+                address: "85/86 Siddiqui Nagar Main Rd, Bannimantap A Layout, Mysuru 570015",
+                phone: "0821-3989896",
+                timing: "OPD: Mon–Sat 8 AM–8 PM; Emergency: 24×7",
+                lastUpdated: "2025‑06‑19 03:00 PM",
+                image: "video/manipal.jpeg",
+                bio: "100-bed multispecialty hospital popular for international patient care, blood bank, and pharmacy."
+            },
+            {
+                name: "KR Hospital, Mysore",
+                lat: 12.31448,
+                lng: 76.65066,
+                availableDonors: 3,
+                address: "Sayyajirao Rd, Devaraja Mohalla, Mysuru 570001",
+                phone: "0821-2423300",
+                timing: "OPD: Mon–Sat 9 AM–7 PM; Emergency: 24×7",
+                lastUpdated: "2025‑06‑18 11:00 AM",
+                image: "video/kr.jpeg",
+                bio: "Government teaching hospital with ~1300 beds and well-equipped emergency and radiology departments."
+            },
+            {
+                name: "Narayana Hospital, Mysore",
+                lat: 12.34634,
+                lng: 76.67244,
+                availableDonors: 4,
+                address: "CAH/1, 3rd Phase, Devanur 2nd Stage, R.S. Naidu Nagar, Mysuru 570019",
+                phone: "9886200026",
+                timing: "OPD: Mon–Sat 9 AM–5 PM; Emergency: 24×7",
+                lastUpdated: "2025‑06‑17 09:00 AM",
+                image: "video/narayana.jpeg",
+                bio: "Part of Narayana Health; 200-bed multispecialty with cath lab, ICU, emergency and cardiology services."
+            }
+        ];
+
+        function calcDist(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) ** 2;
+            return (2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(2);
+        }
+
+        function showDetails(h, ux, uy) {
+            const el = document.getElementById("hospitalDetails");
+            const dist = ux && uy ? calcDist(ux, uy, h.lat, h.lng) + " km" : "Unknown";
+            el.innerHTML = `
+        <div class="flex flex-col md:flex-row items-center gap-6">
+          <img src="${h.image}" alt="${h.name}" class="w-full md:w-1/3 rounded-xl shadow-md object-cover" />
+          <div class="flex-1 text-gray-800">
+            <h4 class="text-2xl font-bold text-red-600 mb-2">${h.name}</h4>
+            <p><strong>Address:</strong> ${h.address}</p>
+            <p><strong>Phone:</strong> ${h.phone}</p>
+            <p><strong>Timings:</strong> ${h.timing}</p>
+            <p><strong>Available Donors:</strong> ${h.availableDonors}</p>
+            <p><strong>Distance:</strong> ${dist}</p>
+            <p><strong>Last Updated:</strong> ${h.lastUpdated}</p>
+            <p class="mt-3 text-gray-600">${h.bio}</p>
+          </div>
+        </div>`;
+        }
+
+        if (!lat || !lng) {
+            document.getElementById("hospitalDetails").innerText = "❌ Location not found. Please allow location or enter a valid address.";
+        } else {
+            L.marker([lat, lng], {
+                icon: L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png',
+                    iconSize: [32, 32]
+                })
+            }).addTo(map).bindPopup("You").openPopup();
+            map.setView([lat, lng], 13);
+
+            hospitals.forEach(h => {
+                const m = L.marker([h.lat, h.lng]).addTo(map).bindPopup(h.name);
+                m.on("click", () => showDetails(h, lat, lng));
+            });
+        }
+    </script>
+</body>
+
+</html>

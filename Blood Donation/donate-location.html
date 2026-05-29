@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Nearby Donation Centers | BloodBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-sA+z0pP0JOP6zH21Vv1DPDkpLGfRT3zv9F+1f5cMOLg=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-o9N1j8MkF0zYlY+yE0Y5zR50UscFzB1jYl9hG93yybM=" crossorigin=""></script>
+    <style>
+        #map {
+            height: 70vh;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-red-50 via-white to-red-100 p-4 min-h-screen font-sans">
+    <h1 class="text-3xl font-bold text-center text-red-600 my-6">Nearby Blood Donation Centers</h1>
+    <div id="map" class="rounded-xl shadow-lg mb-6"></div>
+
+    <div class="text-center">
+        <a href="certificate.html"
+            class="inline-block bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition">
+            Download Certificate
+        </a>
+    </div>
+
+    <script>
+        const hospitals = [
+            {
+                name: "JSS Hospital, Mysore",
+                lat: 12.2958,
+                lng: 76.6394,
+                address: "Ramanuja Road, Mysuru, Karnataka 570004",
+                contact: "+91-821-2548236"
+            },
+            {
+                name: "Apollo BGS Hospital, Mysore",
+                lat: 12.2957,
+                lng: 76.6390,
+                address: "Adichunchanagiri Road, Kuvempunagar, Mysuru",
+                contact: "+91-821-2566666"
+            },
+            {
+                name: "Narayana Multispeciality Hospital",
+                lat: 12.3219,
+                lng: 76.6149,
+                address: "Vijayanagar 3rd Stage, Mysuru",
+                contact: "+91-80-67506800"
+            }
+        ];
+
+        const params = new URLSearchParams(window.location.search);
+        const lat = parseFloat(params.get("lat"));
+        const lng = parseFloat(params.get("lng"));
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+            const map = L.map("map").setView([lat, lng], 13);
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+            }).addTo(map);
+
+            // Mark user location
+            L.circleMarker([lat, lng], {
+                radius: 8,
+                color: "#2563eb",
+                fillColor: "#3b82f6",
+                fillOpacity: 0.8,
+            }).addTo(map).bindPopup("You are here").openPopup();
+
+            // Mark hospitals
+            hospitals.forEach(h => {
+                const popupContent = `
+          <strong>${h.name}</strong><br/>
+          ${h.address}<br/>
+          📞 ${h.contact}
+        `;
+                L.marker([h.lat, h.lng], { title: h.name })
+                    .addTo(map)
+                    .bindPopup(popupContent);
+            });
+        } else {
+            document.getElementById("map").innerHTML = "<p class='text-center text-red-700'>Unable to access location.</p>";
+        }
+    </script>
+</body>
+
+</html>

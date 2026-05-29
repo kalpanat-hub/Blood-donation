@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Donor | BloodBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-pink-100 via-white to-red-200 min-h-screen text-gray-800">
+    <div class="max-w-4xl mx-auto py-10 px-4">
+        <h1 class="text-4xl font-extrabold text-red-600 text-center mb-10">Find a Blood Donor</h1>
+
+        <!-- Filter Section -->
+        <div class="bg-white shadow-md rounded-xl p-6 space-y-4 mb-8">
+            <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block mb-1 font-medium text-sm">Location</label>
+                    <select id="location"
+                        class="w-full border border-red-300 rounded-lg px-4 py-2 focus:outline-red-400">
+                        <option>Kuvempunagar</option>
+                        <option>Saraswathipuram</option>
+                        <option>Lakshmipuram</option>
+                        <option>Hebbal</option>
+                        <option>Vijayanagar</option>
+                        <option>Metagalli</option>
+                        <option>Alanahalli</option>
+                        <option>Chamundi Hill</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block mb-1 font-medium text-sm">Blood Group</label>
+                    <select id="bloodGroup"
+                        class="w-full border border-red-300 rounded-lg px-4 py-2 focus:outline-red-400">
+                        <option>O+</option>
+                        <option>A+</option>
+                        <option>B+</option>
+                        <option>AB+</option>
+                        <option>O-</option>
+                        <option>A-</option>
+                        <option>B-</option>
+                        <option>AB-</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block mb-1 font-medium text-sm">Urgency</label>
+                    <select id="urgency"
+                        class="w-full border border-red-300 rounded-lg px-4 py-2 focus:outline-red-400">
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option>High</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="filterDonors()" class="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded-lg">
+                Find Donors
+            </button>
+        </div>
+
+        <!-- Donor Results Section -->
+        <div id="results" class="space-y-4"></div>
+    </div>
+
+    <!-- Firebase Config + Filter Logic -->
+    <script>
+        // ✅ Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAbZqpnvj0HrhjTwP9kSV_Pn3adqOFuzI",
+            authDomain: "bloodbridge-ca8b4.firebaseapp.com",
+            projectId: "bloodbridge-ca8b4",
+            storageBucket: "bloodbridge-ca8b4.firebasestorage.app",
+            messagingSenderId: "477571925690",
+            appId: "1:477571925690:web:d12236443b24af63c12483"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ✅ Fetch & Filter Donors
+        async function filterDonors() {
+            const loc = document.getElementById("location").value;
+            const group = document.getElementById("bloodGroup").value;
+            const urgency = document.getElementById("urgency").value;
+            const resultDiv = document.getElementById("results");
+            resultDiv.innerHTML = `<p class="text-center text-gray-600">🔎 Searching...</p>`;
+
+            try {
+                const snapshot = await db.collection("donors")
+                    .where("location", "==", loc)
+                    .where("bloodGroup", "==", group)
+                    .where("available", "==", true)
+                    .where("verified", "==", true)
+                    .get();
+
+                if (snapshot.empty) {
+                    resultDiv.innerHTML = `<p class="text-center text-lg text-gray-600">❌ No donors found for your selection.</p>`;
+                    return;
+                }
+
+                resultDiv.innerHTML = ""; // clear loading
+
+                snapshot.forEach(doc => {
+                    const donor = doc.data();
+                    const whatsappMsg = `Hi ${donor.name}, I found your profile on BloodBridge. We urgently need blood of group ${donor.bloodGroup} in ${donor.location}. Urgency: ${urgency}. Are you available to help?`;
+                    const whatsappLink = `https://wa.me/91${donor.phone}?text=${encodeURIComponent(whatsappMsg)}`;
+
+                    const card = document.createElement("div");
+                    card.className = "bg-white rounded-xl shadow p-4 border border-red-200";
+                    card.innerHTML = `
+            <h3 class="text-xl font-bold text-red-600">${donor.name}</h3>
+            <p>🩸 Blood Group: <strong>${donor.bloodGroup}</strong></p>
+            <p>📍 Location: ${donor.location}</p>
+            <p>📞 Phone: <a href="tel:${donor.phone}" class="text-blue-600 hover:underline">${donor.phone}</a></p>
+            <p>Status: <span class="text-green-600 font-semibold">🟢 Active</span></p>
+            <a href="${whatsappLink}" target="_blank" class="inline-block mt-3 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">Chat on WhatsApp</a>
+          `;
+                    resultDiv.appendChild(card);
+                });
+            } catch (err) {
+                resultDiv.innerHTML = `<p class="text-red-600 text-center">⚠️ Error fetching donor data: ${err.message}</p>`;
+            }
+        }
+    </script>
+</body>
+
+</html>

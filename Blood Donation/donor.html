@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Become a Donor | BloodBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .blob-bg {
+            position: absolute;
+            top: -80px;
+            left: -100px;
+            z-index: 0;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-red-50 via-white to-red-100 min-h-screen flex flex-col relative">
+
+    <!-- Red Blob SVG -->
+    <svg class="blob-bg w-[500px] h-[500px]" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ef4444"
+            d="M50.2,-65.2C65.4,-53.2,77.1,-37.4,78.9,-20.7C80.7,-4,72.6,13.6,63.2,28.2C53.8,42.8,43,54.4,29.6,63.6C16.2,72.8,0.1,79.6,-14.4,76.5C-28.9,73.3,-42,60.1,-53.4,46.2C-64.8,32.3,-74.6,17.7,-75.3,2.4C-76.1,-12.9,-67.8,-28.9,-57.1,-42.4C-46.3,-55.8,-33.1,-66.7,-17.2,-72.6C-1.2,-78.5,17.4,-79.4,33.3,-72.6C49.1,-65.7,62,-51.2,50.2,-65.2Z"
+            transform="translate(100 100)" />
+    </svg>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full top-0 left-0 z-50 backdrop-blur-lg bg-white/30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-red-600">BloodBridge</h1>
+            <div class="space-x-6 flex items-center">
+                <a href="index.html" class="hover:text-red-500 transition">Home</a>
+                <a href="find-donor.html" class="hover:text-red-500 transition">Find Donor</a>
+                <a href="donor.html" class="hover:text-red-500 transition font-semibold">Become Donor</a>
+                <a href="request-blood.html" class="hover:text-red-500 transition">Request Blood</a>
+                <a href="event.html" class="hover:text-red-500 transition">Events</a>
+                <button
+                    class="ml-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200">
+                    Login
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="flex-grow max-w-3xl mx-auto px-6 pt-28 pb-12 w-full relative z-10">
+        <h2 class="text-4xl font-extrabold text-red-700 mb-8 text-center">Become a Donor</h2>
+
+        <form id="donorForm" class="bg-white rounded-xl shadow-lg p-8 space-y-6" novalidate>
+            <!-- Full Name -->
+            <div>
+                <label for="name" class="block text-red-700 font-semibold mb-1">Full Name</label>
+                <input type="text" id="name" name="name" required minlength="3"
+                    class="w-full border-2 border-red-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400" />
+            </div>
+
+            <!-- Age and Gender -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="age" class="block text-red-700 font-semibold mb-1">Age</label>
+                    <input type="number" id="age" name="age" min="18" max="65" required
+                        class="w-full border-2 border-red-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400" />
+                </div>
+                <div>
+                    <label for="gender" class="block text-red-700 font-semibold mb-1">Gender</label>
+                    <select id="gender" name="gender" required
+                        class="w-full border-2 border-red-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        <option value="" disabled selected>Select Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Phone and Email -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="phone" class="block text-red-700 font-semibold mb-1">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required
+                        class="w-full border-2 border-red-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400" />
+                </div>
+                <div>
+                    <label for="email" class="block text-red-700 font-semibold mb-1">Email</label>
+                    <input type="email" id="email" name="email" required
+                        class="w-full border-2 border-red-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400" />
+                </div>
+            </div>
+
+            <!-- Blood Group -->
+            <div>
+                <label for="bloodGroup" class="block text-red-700 font-semibold mb-1">Blood Group</label>
+                <select id="bloodGroup" name="bloodGroup" required
+                    class="w-full border-2 border-red-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
+                    <option value="" disabled selected>Select Blood Group</option>
+                    <option>A+</option>
+                    <option>A-</option>
+                    <option>B+</option>
+                    <option>B-</option>
+                    <option>AB+</option>
+                    <option>AB-</option>
+                    <option>O+</option>
+                    <option>O-</option>
+                </select>
+            </div>
+
+            <!-- Address -->
+            <div>
+                <label for="address" class="block text-red-700 font-semibold mb-1">Address</label>
+                <textarea id="address" name="address" rows="3" required
+                    class="w-full border-2 border-red-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 resize-none"></textarea>
+            </div>
+
+            <!-- Submit -->
+            <div class="text-center pt-4">
+                <button type="submit"
+                    class="bg-red-500 text-white px-8 py-3 rounded-lg shadow-md hover:bg-red-600 transition-all duration-300">
+                    Register as Donor
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+ 
+        const form = document.getElementById('donorForm');
+
+  form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+        return;
+    }
+
+        // (Optional) Send to backend
+        const donorData = {
+            name: form.name.value.trim(),
+        age: parseInt(form.age.value),
+        gender: form.gender.value,
+        phone: form.phone.value.trim(),
+        email: form.email.value.trim(),
+        bloodGroup: form.bloodGroup.value,
+        address: form.address.value.trim(),
+    };
+
+    // Comment out backend if not using it
+    /*
+    await fetch('http://localhost:5002/api/donors', {
+            method: 'POST',
+        headers: {'Content-Type': 'application/json' },
+        body: JSON.stringify(donorData),
+    });
+        */
+
+        // Go to thankyou.html
+        form.reset();
+        window.location.href = "thankyou.html";
+  });
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>BloodBridge Landing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.6s ease-in-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="m-0 p-0 overflow-hidden relative bg-black">
+
+    <!-- Fullscreen Video -->
+    <video id="introVideo" autoplay muted playsinline class="fixed top-0 left-0 w-full h-full object-cover z-0"
+        poster="fallback.jpg">
+        <source src="bloodcells.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Centered Welcome Popup -->
+    <div id="introPopup"
+        class="fade-in invisible fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-20">
+        <div
+            class="glass text-center rounded-3xl px-10 py-8 w-[90%] max-w-md shadow-2xl text-white space-y-6 backdrop-blur-lg">
+            <h1 class="text-4xl font-extrabold text-red-200">Welcome to <span class="text-red-500">BloodBridge</span>
+            </h1>
+            <p class="text-sm text-white/80">Thank you for joining the mission to save lives.</p>
+            <a href="index.html"
+                class="inline-block mt-4 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 text-lg">
+                Get Started
+            </a>
+        </div>
+    </div>
+
+    <!-- Skip Intro Button -->
+    <button id="skipIntro"
+        class="absolute top-4 right-4 bg-white/80 text-red-600 text-xs px-3 py-1 rounded-full z-30 shadow hover:bg-white transition">
+        Skip Intro
+    </button>
+
+    <!-- Script -->
+    <script>
+        const video = document.getElementById("introVideo");
+        const popup = document.getElementById("introPopup");
+        const skip = document.getElementById("skipIntro");
+
+        function showUI() {
+            popup.classList.remove("invisible");
+            popup.classList.add("visible");
+        }
+
+        // If the video is really short, use duration
+        video.addEventListener("loadeddata", () => {
+            if (video.duration <= 4) {
+                setTimeout(showUI, video.duration * 1000);
+            }
+        });
+
+        video.addEventListener("ended", showUI);
+
+        skip.addEventListener("click", () => {
+            video.pause();
+            showUI();
+        });
+
+        // Fallback in case nothing triggers
+        setTimeout(showUI, 5000);
+    </script>
+
+</body>
+
+</html>

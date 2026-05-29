@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blood Donation Certificate</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Times New Roman', serif;
+      background: #f2f2f2;
+    }
+    .certificate {
+      width: 100vw;
+      height: 100vh;
+      padding: 60px;
+      border: 15px double #e60000;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Header at top */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .header img {
+      height: 60px;
+      width: 60px;
+    }
+
+    .header span {
+      font-size: 36px;
+      color: #e60000;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: 40px;
+      color: #e60000;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 26px;
+      margin-bottom: 30px;
+    }
+
+    p {
+      font-size: 20px;
+      margin: 15px 0;
+    }
+
+    .donor-name {
+      font-size: 28px;
+      font-weight: bold;
+      color: #222;
+    }
+
+    .footer {
+      margin-top: 50px;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .footer div {
+      text-align: center;
+    }
+
+    .footer hr {
+      width: 250px;
+      border: none;
+      border-top: 2px solid #000;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="certificate">
+    <!-- Top Logo and Name -->
+    <div class="header">
+      <img src="logo.jpg" alt="Blood Donation Logo">
+      <span>BloodBridge</span>
+    </div>
+
+    <!-- Certificate Content -->
+    <h1>Certificate of Appreciation</h1>
+    <h2>For Blood Donation</h2>
+    <p>This certificate is proudly presented to</p>
+    <p class="donor-name">[Donor Name]</p>
+    <p>In recognition of your valuable contribution<br>through voluntary blood donation.</p>
+    <p><strong>Date:</strong> [DD/MM/YYYY]</p>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div>
+        <hr>
+        <p>Authorized Sign</p>
+      </div>
+      <div>
+        <hr>
+        <p>Organization Name</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

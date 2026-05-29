@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Become a Donor | BloodBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+
+<body class="bg-red-50 text-gray-800">
+
+    <!-- ✅ Navbar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-red-600">BloodBridge</h1>
+            <button id="hamburger" class="md:hidden text-red-600 text-3xl">&#9776;</button>
+            <nav id="nav" class="hidden md:flex gap-6 items-center">
+                <a href="index.html" class="text-red-600 hover:underline">Home</a>
+                <a href="finddonor.html" class="text-red-600 hover:underline">Find Donor</a>
+                <a href="donorForm.html" class="text-red-600 font-semibold underline">Become a Donor</a>
+            </nav>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white px-4 pb-4">
+            <a href="index.html" class="block py-2 text-red-600">Home</a>
+            <a href="finddonor.html" class="block py-2 text-red-600">Find Donor</a>
+            <a href="donorForm.html" class="block py-2 text-red-600 font-semibold">Become a Donor</a>
+        </div>
+    </header>
+
+    <!-- ✅ Form Section -->
+    <section class="max-w-2xl mx-auto mt-10 bg-white p-6 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-bold text-red-600 mb-4">Become a Donor</h2>
+        <form id="donorForm" class="space-y-4">
+            <input type="text" id="name" placeholder="Full Name" class="w-full border rounded-lg px-4 py-2" required />
+            <input type="tel" id="phone" placeholder="Phone Number" class="w-full border rounded-lg px-4 py-2"
+                required />
+            <select id="bloodGroup" class="w-full border rounded-lg px-4 py-2" required>
+                <option value="">Select Blood Group</option>
+                <option>O+</option>
+                <option>A+</option>
+                <option>B+</option>
+                <option>AB+</option>
+                <option>O-</option>
+                <option>A-</option>
+                <option>B-</option>
+                <option>AB-</option>
+            </select>
+            <select id="location" class="w-full border rounded-lg px-4 py-2" required>
+                <option value="">Select Location (Mysore Areas)</option>
+                <option>Kuvempunagar</option>
+                <option>VV Mohalla</option>
+                <option>Saraswathipuram</option>
+                <option>Vijayanagar</option>
+                <option>Lakshmipuram</option>
+            </select>
+            <label class="block">
+                <input type="checkbox" id="available" class="mr-2" />
+                I am currently available to donate
+            </label>
+            <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700">
+                Submit as Donor
+            </button>
+        </form>
+        <p id="success" class="text-green-600 font-semibold mt-4 hidden">✅ Donor info submitted successfully!</p>
+    </section>
+
+    <!-- ✅ Script for Firebase + Save -->
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAbZqpnvj0HrhjTwP9kSV_Pn3adqOFuzI",
+            authDomain: "bloodbridge-ca8b4.firebaseapp.com",
+            projectId: "bloodbridge-ca8b4",
+            storageBucket: "bloodbridge-ca8b4.firebasestorage.app",
+            messagingSenderId: "477571925690",
+            appId: "1:477571925690:web:d12236443b24af63c12483",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Hamburger Menu
+        document.getElementById("hamburger").onclick = () => {
+            document.getElementById("mobileMenu").classList.toggle("hidden");
+        };
+
+        // Donor Form Submission
+        document.getElementById("donorForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if (!user) return alert("You must be logged in to submit donor info!");
+
+            const data = {
+                uid: user.uid,
+                name: document.getElementById("name").value.trim(),
+                phone: document.getElementById("phone").value.trim(),
+                bloodGroup: document.getElementById("bloodGroup").value,
+                location: document.getElementById("location").value,
+                available: document.getElementById("available").checked,
+                verified: true,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection("donors").doc(user.uid).set(data);
+                document.getElementById("success").classList.remove("hidden");
+                document.getElementById("donorForm").reset();
+
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = "thankyou.html";
+                }, 1500);
+            } catch (err) {
+                alert("❌ Error saving donor info: " + err.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

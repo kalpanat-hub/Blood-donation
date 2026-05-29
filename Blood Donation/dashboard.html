@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | BloodBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        .hamburger {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: block;
+                cursor: pointer;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-red-50 via-white to-red-100 min-h-screen text-gray-800">
+    <!-- Responsive Navbar -->
+    <nav class="bg-white shadow sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between">
+                <div>
+                    <a href="index.html" class="flex items-center py-4 px-2">
+                        <span class="font-bold text-red-600 text-2xl">BloodBridge</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-6 nav-links">
+                    <a href="index.html" class="text-gray-600 hover:text-red-600 transition">Home</a>
+                    <a href="doner.html" class="text-gray-600 hover:text-red-600 transition">Find Donor</a>
+                    <a href="donorForm.html" class="text-gray-600 hover:text-red-600 transition">Become Donor</a>
+                    <a href="RequestBlood.html" class="text-gray-600 hover:text-red-600 transition">Request Blood</a>
+                    <a href="dashboard.html" class="text-red-600 font-semibold">Dashboard</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button class="hamburger text-red-600 text-3xl" onclick="toggleMenu()">&#9776;</button>
+                </div>
+            </div>
+        </div>
+        <div class="md:hidden px-4 pb-4 hidden" id="mobileMenu">
+            <a href="index.html" class="block py-2 text-gray-600 hover:text-red-600">Home</a>
+            <a href="doner.html" class="block py-2 text-gray-600 hover:text-red-600">Find Donor</a>
+            <a href="donorForm.html" class="block py-2 text-gray-600 hover:text-red-600">Become Donor</a>
+            <a href="RequestBlood.html" class="block py-2 text-gray-600 hover:text-red-600">Request Blood</a>
+            <a href="dashboard.html" class="block py-2 text-red-600 font-semibold">Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto p-6">
+        <h1 class="text-4xl font-bold text-red-600 mb-6">🩸 Donor Dashboard</h1>
+
+        <div id="profile" class="bg-white rounded-xl shadow p-6 mb-6">
+            <h2 class="text-2xl font-semibold mb-2">👤 Your Profile</h2>
+            <p><strong>Name:</strong> <span id="donorName">Loading...</span></p>
+            <p><strong>Blood Group:</strong> <span id="bloodGroup">Loading...</span></p>
+            <p><strong>Location:</strong> <span id="location">Loading...</span></p>
+            <p><strong>Donation Status:</strong> <span id="status" class="text-yellow-600 font-medium">Pending
+                    verification...</span></p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-6 mb-6">
+            <h2 class="text-2xl font-semibold mb-4">🎮 Your Lifesaver Progress</h2>
+            <div class="flex items-center gap-4">
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div id="progressBar" class="bg-red-500 h-4 rounded-full w-1/5"></div>
+                </div>
+                <span id="donationCount" class="text-sm">1 / 5 Donations</span>
+            </div>
+            <p class="mt-2 text-sm text-gray-600">Reach 5 donations to unlock your Bronze Lifesaver Badge 🥉</p>
+        </div>
+
+        <div id="certificateBlock" class="bg-white rounded-xl shadow p-6 mb-6 hidden">
+            <h2 class="text-2xl font-semibold mb-2">📜 Your Certificates</h2>
+            <a id="certificateLink" href="#" target="_blank" class="text-blue-600 underline">Download Certificate</a>
+        </div>
+
+        <div id="mediaBlock" class="bg-white rounded-xl shadow p-6 hidden">
+            <h2 class="text-2xl font-semibold mb-2">🎥 Thank You From Recipient</h2>
+            <video id="thankYouVideo" controls class="rounded-lg w-full shadow"></video>
+            <p class="text-sm text-gray-500 mt-2">This video was shared with permission and blurred for privacy.</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-6 mb-6">
+            <h2 class="text-2xl font-semibold mb-2">📊 Blood Usage Timeline</h2>
+            <ul class="list-disc pl-6 text-sm text-gray-700">
+                <li>✅ Registered on: <span id="registeredDate">--</span></li>
+                <li>✅ Verified on: <span id="verifiedDate">--</span></li>
+                <li>⏳ Last blood used on: <span id="usedDate">--</span></li>
+            </ul>
+        </div>
+
+        <div class="text-center mt-10">
+            <a href="index.html"
+                class="inline-block bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition">← Back to
+                Home</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        const firebaseConfig = {
+                apiKey: "AIzaSyDAbZqpnvj0HrhjTwP9kSV_Pn3adqOFuzI",
+                authDomain: "bloodbridge-ca8b4.firebaseapp.com",
+                projectId: "bloodbridge-ca8b4",
+                storageBucket: "bloodbridge-ca8b4.firebasestorage.app",
+                messagingSenderId: "477571925690",
+                appId: "1:477571925690:web:d12236443b24af63c12483",
+            };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged(async user => {
+            if (!user) {
+                alert("Please login first.");
+                window.location.href = "LoginPage.html";
+                return;
+            }
+
+            const doc = await db.collection("donors").doc(user.uid).get();
+            if (!doc.exists) return;
+
+            const donor = doc.data();
+            document.getElementById("donorName").textContent = donor.name;
+            document.getElementById("bloodGroup").textContent = donor.bloodGroup;
+            document.getElementById("location").textContent = donor.location;
+            document.getElementById("status").textContent = donor.verified ? "✅ Verified Donor" : "Pending verification...";
+
+            // Progress Bar
+            const count = donor.donationCount || 1;
+            const percent = Math.min((count / 5) * 100, 100);
+            document.getElementById("progressBar").style.width = `${percent}%`;
+            document.getElementById("donationCount").textContent = `${count} / 5 Donations`;
+
+            // Show Certificate if available
+            if (donor.certificateUrl) {
+                document.getElementById("certificateBlock").classList.remove("hidden");
+                document.getElementById("certificateLink").href = donor.certificateUrl;
+            }
+
+            // Show Thank You Video if available
+            if (donor.mediaUrl) {
+                document.getElementById("mediaBlock").classList.remove("hidden");
+                document.getElementById("thankYouVideo").src = donor.mediaUrl;
+            }
+
+            // Blood usage timeline (if available)
+            document.getElementById("registeredDate").textContent = donor.timestamp ? new Date(donor.timestamp.toDate()).toLocaleDateString() : '--';
+            document.getElementById("verifiedDate").textContent = donor.verifiedOn || '--';
+            document.getElementById("usedDate").textContent = donor.bloodUsedOn || '--';
+        });
+    </script>
+</body>
+
+</html>
